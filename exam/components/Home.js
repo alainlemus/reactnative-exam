@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Text, View, StyleSheet, Button } from 'react-native'
+import { View, StyleSheet, Button } from 'react-native'
  
 const Home = ({ navigation }) => {
         return (
@@ -14,11 +14,10 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
         width: '100%',
-        height: '100%'
-    },
-    title: {
-        textAlign: 'center'
+        height: '100%',
     }
 })
 
