@@ -1,48 +1,87 @@
 import * as React from 'react'
-import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native'
+import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 
 import { Entypo  } from '@expo/vector-icons'
+import { getDbconnection, loginUser } from '../utils/db'
  
 const Login = () => {
 
     const [ message, setMessage ] = React.useState("")
     const [flagSecure, setFlagSecure] = React.useState(true)
 
-    const correo = React.useRef("")
+    const usuario = React.useRef("")
     const password = React.useRef("")
 
     const data = {
         'password': {
             'validation': 'required',
-            // 'regex': /^[a-zA-Z0-9]{4,16}$/,
             'message': 'El campo es requerido.',
             'validate': false
         },
-        'email': {
+        'user': {
             'validation': 'required',
-            'regex': /^[^@]+@[^@]+\.[a-zA-Z]{2,}$/u,
-            'message': 'El campo es requerido, solo se permiten direcciones de correo.',
+            'regex': /^[a-zA-Z0-9]{4,16}$/,
+            'message': 'El campo es requerido.',
             'validate': false
         }
     }
 
 
-    const emailValidate = (value) => {
-        correo.current = value
-        if(data.email.regex.test(value)) {
+    const userValidate = (value) => {
+        usuario.current = value
+        if(data.user.regex.test(value)) {
             setMessage("")
         } else {
-            setMessage(data.email.message)
+            setMessage(data.user.message)
         }
     }
 
     const passwordValidate = (value) => {
         password.current = value
-        if(value.length >= 4) {
+        if(value.length >=2 ) {
             setMessage("")
         } else {
             setMessage(data.password.message)
         }
+    }
+
+    const login = async () =>{
+
+        if(usuario === '' && password === ''){
+            //setError('usuario y password incorrectos')
+            console.log('usuario y password incorrectos')
+            return
+        }
+
+        try{
+
+            const db = await getDbconnection()
+            const result = await loginUser(db, usuario, password)
+
+            console.log('result-------', result)
+
+            if(result != null){
+                console.log(result)
+                result.type == 'empresa' ? navigation.navigate('Admin') : navigation.navigate('User')
+            }else{
+                Alert.alert(
+                    'Error',
+                    'Usuario y/o contraseña incorrectos',
+                    [
+                        {
+                            text: 'Cerrar',
+                        }
+                    ],
+                    {cancellable: false}
+                )
+            }
+
+            db.close()
+
+        }catch(e){
+            console.log(`ocurrio un error en bd: ${e.message}`)
+        }
+
     }
 
 
@@ -54,9 +93,9 @@ const Login = () => {
             <TextInput
                 style={styles.input}
                 autoCapitalize="none"
-                onChangeText={emailValidate}
-                defaultValue={correo.current}
-                placeholder="Correo"
+                onChangeText={userValidate}
+                defaultValue={usuario.current}
+                placeholder="usuario"
             />
 
             <View style={{position: 'relative', width: '90%'}}>
@@ -91,7 +130,7 @@ const Login = () => {
 
             <Text style={ styles.messageError }>{ message }</Text>
 
-            <Button title='Ingresar'/>
+            <Button onPress={login} title='Ingresar'/>
 
 
         </View>
