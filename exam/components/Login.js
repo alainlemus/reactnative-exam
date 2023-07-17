@@ -1,5 +1,7 @@
 import * as React from 'react'
-import { Text, View, TextInput, Button, StyleSheet } from 'react-native'
+import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native'
+
+import { Entypo  } from '@expo/vector-icons'
  
 const Login = () => {
 
@@ -57,14 +59,37 @@ const Login = () => {
                 placeholder="Correo"
             />
 
-            <TextInput
-                style={styles.input}
-                secureTextEntry={flagSecure}
-                onChangeText={passwordValidate}
-                defaultValue={password.current}
-                placeholder="Contraseña"
-                keyboardType="password"
-            />
+            <View style={{position: 'relative', width: '90%'}}>
+
+                <TextInput
+                    style={styles.input}
+                    secureTextEntry={flagSecure}
+                    onChangeText={passwordValidate}
+                    defaultValue={password.current}
+                    placeholder="Contraseña"
+                    keyboardType="password"
+                />
+
+                <TouchableOpacity
+                    onPress={() => setFlagSecure(!flagSecure)}
+                    style={{ position: 'absolute', right: 10, top: 20, width: 30 }}
+                >
+                    {
+                        (flagSecure 
+                            ?
+                            <Entypo name={"eye-with-line"} size={20} />
+                            
+                            :
+                            <Entypo name={"eye"} size={20} />
+                        )
+                    }
+                    
+                </TouchableOpacity>
+
+            </View>
+
+
+            <Text style={ styles.messageError }>{ message }</Text>
 
             <Button title='Ingresar'/>
 
@@ -74,6 +99,9 @@ const Login = () => {
 }
 
 const styles = StyleSheet.create({
+    inputContainer: {
+        width: '100%',
+    },
     container: {
         flex: 1,
         alignItems: 'center',
@@ -84,7 +112,6 @@ const styles = StyleSheet.create({
         borderColor: '#808080',
         height: 50,
         marginVertical: 10,
-        fontFamily: 'ArchivoCondensedMedium',
         fontSize: 18,
         width: '90%',
     },
@@ -105,6 +132,11 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
     },
+    messageError: {
+        color: 'red',
+        fontSize: 12,
+        paddingBottom: 20
+    }
 })
 
 export default Login

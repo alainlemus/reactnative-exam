@@ -4,9 +4,9 @@ import { View, StyleSheet, Button } from 'react-native'
 const Home = ({ navigation }) => {
         return (
             <View style={styles.container}>
-                <Button title='Empresas' onPress={() => navigation.navigate('Login')}/>
-                <Button title='Empleados' onPress={() => navigation.navigate('Login')}/>
-                <Button title='Posts' onPress={() => navigation.navigate('Posts')}/>
+                <Button title='Login Empresas' onPress={() => navigation.navigate('Login')}/>
+                <Button title='Login Empleados' onPress={() => navigation.navigate('Login')}/>
+                <Button title='Ver Posts' onPress={() => navigation.navigate('Posts')}/>
             </View>
         )
 }
