@@ -67,7 +67,7 @@ const Login = ({ navigation }) => {
 
             const db = await getDbconnection()
             const query = `SELECT * FROM usuarios WHERE usuario = '${usuario.current}' AND password = '${password.current}'`
-            const result = db.transaction(
+            db.transaction(
                 tx => {
                     tx.executeSql(query, [], (_, { rows }) => setLoginUser(rows['_array']))
                 },
@@ -77,7 +77,10 @@ const Login = ({ navigation }) => {
             console.log(loginUser)
 
             if(loginUser != null){
-                loginUser[0].type == 'empresa' ? navigation.navigate('Admin') : navigation.navigate('User')
+                loginUser[0].type == 'empresa' ? navigation.navigate('Admin') : navigation.navigate('User', {
+                    nombre: loginUser[0].name,
+                    usuario: loginUser[0].usuario
+                })
             }else{
                 Alert.alert(
                     'Error',
