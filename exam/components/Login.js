@@ -2,13 +2,15 @@ import * as React from 'react'
 import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 
 import { Entypo  } from '@expo/vector-icons'
-import { getDbconnection, loginUser } from '../utils/db'
+import { getDbconnection } from '../utils/db'
  
-const Login = () => {
+const Login = ({ navigation }) => {
 
     const [ message, setMessage ] = React.useState("")
     const [flagSecure, setFlagSecure] = React.useState(true)
+    const [loginUser, setLoginUser] = React.useState(null)
 
+    //const loginUser = React.useRef(null)
     const usuario = React.useRef("")
     const password = React.useRef("")
 
@@ -20,7 +22,7 @@ const Login = () => {
         },
         'user': {
             'validation': 'required',
-            'regex': /^[a-zA-Z0-9]{4,16}$/,
+            'regex': /^[a-zA-Z0-9]$/,
             'message': 'El campo es requerido.',
             'validate': false
         }
@@ -47,22 +49,35 @@ const Login = () => {
 
     const login = async () =>{
 
-        if(usuario === '' && password === ''){
-            //setError('usuario y password incorrectos')
-            console.log('usuario y password incorrectos')
+        if(usuario.current === '' || password.current === ''){
+            Alert.alert(
+                'Error',
+                'Favor de llenar los campos',
+                [
+                    {
+                        text: 'Cerrar',
+                    }
+                ],
+                {cancellable: false}
+            )
             return
         }
 
         try{
 
             const db = await getDbconnection()
-            const result = await loginUser(db, usuario, password)
+            const query = `SELECT * FROM usuarios WHERE usuario = '${usuario.current}' AND password = '${password.current}'`
+            const result = db.transaction(
+                tx => {
+                    tx.executeSql(query, [], (_, { rows }) => setLoginUser(rows['_array']))
+                },
+                null
+            )
 
-            console.log('result-------', result)
+            console.log(loginUser)
 
-            if(result != null){
-                console.log(result)
-                result.type == 'empresa' ? navigation.navigate('Admin') : navigation.navigate('User')
+            if(loginUser != null){
+                loginUser[0].type == 'empresa' ? navigation.navigate('Admin') : navigation.navigate('User')
             }else{
                 Alert.alert(
                     'Error',
@@ -106,7 +121,7 @@ const Login = () => {
                     onChangeText={passwordValidate}
                     defaultValue={password.current}
                     placeholder="Contraseña"
-                    keyboardType="password"
+                    
                 />
 
                 <TouchableOpacity
